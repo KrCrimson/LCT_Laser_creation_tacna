@@ -63,5 +63,22 @@ export function calcularCosto90x60(
   cantidad90x60: number
 ): number {
   const total = precio + precioCorte + costoEnvio;
-  return Math.round((total / cantidad90x60) * 100) / 100;
+  return Math.round((total / Math.max(1, cantidad90x60)) * 100) / 100;
+}
+
+export function calcularArea(largo: number, ancho: number): number {
+  return largo * ancho;
+}
+
+export function calcularCantidad90x60(areaPlancha: number): number {
+  // Cuántas piezas de 540,000 caben, redondeado hacia abajo
+  return Math.max(1, Math.floor(areaPlancha / AREA_REFERENCIA));
+}
+
+export function calcularPrecioTotalMaterial(precio: number, precioCorte: number, costoEnvio: number): number {
+  return precio + precioCorte + costoEnvio;
+}
+
+export function calcularCostoPlancha90x60(precioTotal: number, cantidad90x60: number): number {
+  return Math.round((precioTotal / Math.max(1, cantidad90x60)) * 100) / 100;
 }
