@@ -117,11 +117,9 @@ export function AppLayout({ children, user }: AppLayoutProps) {
           <div className="flex items-center gap-4">
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" className="px-2 md:hidden">
+              <SheetTrigger render={<Button variant="ghost" className="px-2 md:hidden" />}>
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Toggle Menu</span>
-                </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                 <div className="flex h-full flex-col">
