@@ -1,0 +1,215 @@
+// Schema de Base de Datos — Laser Creation Tacna
+// Migrado de Visual FoxPro (DBF) a PostgreSQL (Prisma ORM)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// MÓDULO: USUARIOS Y AUTENTICACIÓN
+// ============================================
+
+model Usuario {
+  id          String    @id @default(cuid())
+  username    String    @unique
+  nombre      String
+  apellidoPat String    @map("apellido_pat")
+  apellidoMat String    @map("apellido_mat")
+  dni         String?
+  fechaNac    DateTime? @map("fecha_nac")
+  password    String    // bcrypt hash
+  nivel       Int       @default(1) // 1 = usuario normal, 2 = administrador
+  foto        String?
+  activo      Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("usuarios")
+}
+
+// ============================================
+// MÓDULO: CLIENTES
+// ============================================
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nombre    String
+  domicilio String?
+  telefono  String?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  proformas Proforma[]
+
+  @@map("clientes")
+}
+
+// ============================================
+// MÓDULO: MATERIALES
+// Catálogo de materiales para corte láser
+// Fórmula clave: costo90x60 = precioTotal / cantidad90x60
+// ============================================
+
+model Material {
+  id            String   @id @default(cuid())
+  descripcion   String
+  espesor       Decimal  @default(0) @db.Decimal(10, 2)
+  procedencia   String?
+  largo         Decimal  @default(0) @db.Decimal(10, 2)
+  ancho         Decimal  @default(0) @db.Decimal(10, 2)
+  area          Decimal  @default(0) @db.Decimal(10, 2) // largo * ancho
+  cantidad90x60 Int      @default(1) @map("cantidad_90x60") // piezas 900x600 por plancha
+  precio        Decimal  @default(0) @db.Decimal(10, 2) // precio de compra plancha
+  precioCorte   Decimal  @default(0) @map("precio_corte") @db.Decimal(10, 2)
+  costoEnvio    Decimal  @default(0) @map("costo_envio") @db.Decimal(10, 2)
+  precioTotal   Decimal  @default(0) @map("precio_total") @db.Decimal(10, 2) // precio + corte + envio
+  costo90x60    Decimal  @default(0) @map("costo_90x60") @db.Decimal(10, 2) // precioTotal / cantidad90x60
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  productos Producto[]
+
+  @@map("materiales")
+}
+
+// ============================================
+// MÓDULO: COMPLEMENTOS
+// Accesorios/servicios con costo fijo unitario
+// Fórmula: costoUnitario = precio / cantidad
+// ============================================
+
+model Complemento {
+  id            String   @id @default(cuid())
+  descripcion   String
+  precio        Decimal  @default(0) @db.Decimal(10, 2) // precio total del lote
+  cantidad      Int      @default(1) // unidades en el lote
+  costoUnitario Decimal  @default(0) @map("costo_unitario") @db.Decimal(10, 2)
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  productos ComplementoProducto[]
+
+  @@map("complementos")
+}
+
+// ============================================
+// MÓDULO: GASTOS ADICIONALES
+// Gastos calculados como % del costo del material
+// ============================================
+
+model GastoAdicional {
+  id          String   @id @default(cuid())
+  descripcion String
+  porcentaje  Decimal  @default(0) @db.Decimal(10, 2)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  productos GastoAdicionalProducto[]
+
+  @@map("gastos_adicionales")
+}
+
+// ============================================
+// MÓDULO: PRODUCTOS (Corazón del sistema)
+// Fórmulas:
+//   costoMaterial = (largo * ancho * costo90x60) / 540000
+//   costoTotal = costoMaterial + Σ(adicionales) + Σ(complementos)
+// ============================================
+
+model Producto {
+  id                 String   @id @default(cuid())
+  descripcion        String
+  detalles           String?  @db.Text
+  imagen             String?
+  largo              Decimal  @default(0) @db.Decimal(10, 2) // mm
+  ancho              Decimal  @default(0) @db.Decimal(10, 2) // mm
+  area               Decimal  @default(0) @db.Decimal(10, 2) // largo * ancho
+  materialId         String   @map("material_id")
+  material           Material @relation(fields: [materialId], references: [id])
+  costoMaterial      Decimal  @default(0) @map("costo_material") @db.Decimal(10, 2)
+  costosAdicionales  Decimal  @default(0) @map("costos_adicionales") @db.Decimal(10, 2)
+  costosComplementos Decimal  @default(0) @map("costos_complementos") @db.Decimal(10, 2)
+  costoTotal         Decimal  @default(0) @map("costo_total") @db.Decimal(10, 2)
+  activo             Boolean  @default(true)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  gastosAdicionales GastoAdicionalProducto[]
+  complementos      ComplementoProducto[]
+  proformaItems     ProformaItem[]
+
+  @@map("productos")
+}
+
+// Tabla pivote: Gastos Adicionales asignados a un Producto
+model GastoAdicionalProducto {
+  id               String         @id @default(cuid())
+  productoId       String         @map("producto_id")
+  producto         Producto       @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  gastoAdicionalId String         @map("gasto_adicional_id")
+  gastoAdicional   GastoAdicional @relation(fields: [gastoAdicionalId], references: [id])
+  porcentaje       Decimal        @default(0) @db.Decimal(10, 2)
+  costo            Decimal        @default(0) @db.Decimal(10, 2)
+
+  @@map("gastos_adicionales_productos")
+}
+
+// Tabla pivote: Complementos asignados a un Producto
+model ComplementoProducto {
+  id            String      @id @default(cuid())
+  productoId    String      @map("producto_id")
+  producto      Producto    @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  complementoId String      @map("complemento_id")
+  complemento   Complemento @relation(fields: [complementoId], references: [id])
+  costo         Decimal     @default(0) @db.Decimal(10, 2)
+
+  @@map("complementos_productos")
+}
+
+// ============================================
+// MÓDULO: PROFORMAS (Cotizaciones)
+// ============================================
+
+model Proforma {
+  id             String   @id @default(cuid())
+  clienteId      String   @map("cliente_id")
+  cliente        Cliente  @relation(fields: [clienteId], references: [id])
+  fecha          DateTime @default(now())
+  descripcion    String?
+  costo          Decimal  @default(0) @db.Decimal(10, 2) // suma de costos de productos
+  utilidad       Decimal  @default(0) @db.Decimal(10, 2)
+  porcGanancia   Decimal  @default(0) @map("porc_ganancia") @db.Decimal(10, 2)
+  precioFinal    Decimal  @default(0) @map("precio_final") @db.Decimal(10, 2)
+  ventaRealizada Boolean  @default(false) @map("venta_realizada")
+  imagen         String?
+  activo         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  items ProformaItem[]
+
+  @@map("proformas")
+}
+
+// Items de una Proforma (productos incluidos)
+model ProformaItem {
+  id          String   @id @default(cuid())
+  proformaId  String   @map("proforma_id")
+  proforma    Proforma @relation(fields: [proformaId], references: [id], onDelete: Cascade)
+  productoId  String   @map("producto_id")
+  producto    Producto @relation(fields: [productoId], references: [id])
+  cantidad    Int      @default(1)
+  precio      Decimal  @default(0) @db.Decimal(10, 2)
+  ganancia    Decimal  @default(0) @db.Decimal(10, 2)
+  precioFinal Decimal  @default(0) @map("precio_final") @db.Decimal(10, 2)
+
+  @@map("proforma_items")
+}
