@@ -55,7 +55,7 @@ export function MaterialDialog({ material, trigger, open: controlledOpen, onOpen
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger as React.ReactElement} />}
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{material ? "Editar Material" : "Nuevo Material"}</DialogTitle>
