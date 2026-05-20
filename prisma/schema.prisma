@@ -2,7 +2,8 @@
 // Migrado de Visual FoxPro (DBF) a PostgreSQL (Prisma ORM)
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
