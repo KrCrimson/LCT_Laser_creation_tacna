@@ -15,9 +15,23 @@ import { MaterialActions } from "./material-actions";
 import { Badge } from "@/components/ui/badge";
 
 export default async function MaterialesPage() {
-  const materiales = await prisma.material.findMany({
+  const materialesDb = await prisma.material.findMany({
     orderBy: { descripcion: "asc" },
   });
+
+  // Convertir Decimales de Prisma a numbers para los Client Components
+  const materiales = materialesDb.map(m => ({
+    ...m,
+    espesor: Number(m.espesor),
+    largo: Number(m.largo),
+    ancho: Number(m.ancho),
+    area: Number(m.area),
+    precio: Number(m.precio),
+    precioCorte: Number(m.precioCorte),
+    costoEnvio: Number(m.costoEnvio),
+    precioTotal: Number(m.precioTotal),
+    costo90x60: Number(m.costo90x60),
+  }));
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
