@@ -21,7 +21,7 @@ export async function createCliente(prevState: any, formData: FormData) {
     const validated = ClienteSchema.safeParse(data);
 
     if (!validated.success) {
-      return { error: validated.error.errors[0].message };
+      return { error: validated.error.issues[0].message };
     }
 
     await prisma.cliente.create({
@@ -46,7 +46,7 @@ export async function updateCliente(id: string, prevState: any, formData: FormDa
     const validated = ClienteSchema.safeParse(data);
 
     if (!validated.success) {
-      return { error: validated.error.errors[0].message };
+      return { error: validated.error.issues[0].message };
     }
 
     await prisma.cliente.update({
