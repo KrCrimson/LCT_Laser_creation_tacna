@@ -37,7 +37,7 @@ export async function createMaterial(prevState: any, formData: FormData) {
     const validated = MaterialSchema.safeParse(data);
 
     if (!validated.success) {
-      return { error: validated.error.errors[0].message };
+      return { error: validated.error.issues[0].message };
     }
 
     const val = validated.data;
@@ -82,7 +82,7 @@ export async function updateMaterial(id: string, prevState: any, formData: FormD
     const validated = MaterialSchema.safeParse(data);
 
     if (!validated.success) {
-      return { error: validated.error.errors[0].message };
+      return { error: validated.error.issues[0].message };
     }
 
     const val = validated.data;
