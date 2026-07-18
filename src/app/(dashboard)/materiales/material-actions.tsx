@@ -56,7 +56,7 @@ export function MaterialActions({ material }: { material: Material }) {
             <MoreHorizontal className="h-4 w-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+          <div className="px-2 py-1.5 text-sm font-semibold">Acciones</div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
             <Pencil className="mr-2 h-4 w-4" />

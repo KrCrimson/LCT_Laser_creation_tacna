@@ -150,7 +150,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
                     <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56" align="end">
                 <div className="flex flex-col space-y-1 p-2">
                   <p className="text-sm font-medium leading-none">{user.name}</p>
                   <p className="text-xs leading-none text-muted-foreground">
