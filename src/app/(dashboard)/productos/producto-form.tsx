@@ -5,6 +5,7 @@ import { createProducto } from "./producto-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { parseSvgDimensions } from "@/lib/utils"
+import { generarProformaPDF } from "@/lib/pdf-generator"
 
 export function ProductoForm({ materiales }: { materiales: any[] }) {
   const [largo, setLargo] = useState(0)
@@ -12,6 +13,7 @@ export function ProductoForm({ materiales }: { materiales: any[] }) {
   const [materialId, setMaterialId] = useState("")
   const [esPlantilla, setEsPlantilla] = useState(false)
   const [archivoDiseno, setArchivoDiseno] = useState("")
+  const [descripcion, setDescripcion] = useState("")
 
   function handleSvgUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -49,7 +51,7 @@ export function ProductoForm({ materiales }: { materiales: any[] }) {
       
       <div>
         <label className="text-sm font-medium">Descripción</label>
-        <Input name="descripcion" required placeholder="Ej. Llavero personalizado" />
+        <Input name="descripcion" required placeholder="Ej. Llavero personalizado" value={descripcion} onChange={e => setDescripcion(e.target.value)} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -115,7 +117,25 @@ export function ProductoForm({ materiales }: { materiales: any[] }) {
         <p className="text-3xl font-bold text-primary">S/ {costoMaterial.toFixed(2)}</p>
       </div>
 
-      <Button type="submit" className="w-full">Guardar Producto</Button>
+      <div className="grid grid-cols-2 gap-2">
+        <Button type="submit" className="w-full">Guardar Producto</Button>
+        <Button 
+          type="button" 
+          variant="secondary" 
+          className="w-full bg-green-600 hover:bg-green-700 text-white"
+          onClick={() => {
+            generarProformaPDF({
+              descripcion,
+              largo,
+              ancho,
+              materialNombre: materialSeleccionado?.descripcion || "",
+              costoMaterial
+            })
+          }}
+        >
+          Descargar Proforma PDF
+        </Button>
+      </div>
     </form>
   )
 }
