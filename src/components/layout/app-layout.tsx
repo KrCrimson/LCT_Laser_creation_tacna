@@ -12,7 +12,8 @@ import {
   Receipt, 
   FileText,
   LogOut,
-  Menu
+  Menu,
+  HelpCircle
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -63,6 +64,11 @@ const navItems = [
     href: "/proformas",
     icon: FileText,
   },
+  {
+    title: "Ayuda",
+    href: "/ayuda",
+    icon: HelpCircle,
+  },
 ];
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -77,7 +83,7 @@ function SidebarNav({ className, onNavigate, nivel, ...props }: SidebarNavProps)
   // Nivel 2 (Admin): Todo
   const filteredNavItems = navItems.filter(item => {
     if (nivel === 2) return true;
-    const allowed = ["Dashboard", "Clientes", "Productos", "Proformas"];
+    const allowed = ["Dashboard", "Clientes", "Productos", "Proformas", "Ayuda"];
     return allowed.includes(item.title);
   });
 
