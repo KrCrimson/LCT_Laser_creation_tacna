@@ -67,14 +67,23 @@ const navItems = [
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLDivElement> {
   onNavigate?: () => void;
+  nivel: number;
 }
 
-function SidebarNav({ className, onNavigate, ...props }: SidebarNavProps) {
+function SidebarNav({ className, onNavigate, nivel, ...props }: SidebarNavProps) {
   const pathname = usePathname();
+
+  // Nivel 1 (Empleado): Solo Dashboard, Clientes, Productos, Proformas
+  // Nivel 2 (Admin): Todo
+  const filteredNavItems = navItems.filter(item => {
+    if (nivel === 2) return true;
+    const allowed = ["Dashboard", "Clientes", "Productos", "Proformas"];
+    return allowed.includes(item.title);
+  });
 
   return (
     <nav className={cn("grid items-start gap-2", className)} {...props}>
-      {navItems.map((item, index) => {
+      {filteredNavItems.map((item, index) => {
         const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
         return (
           <Link key={index} href={item.href} onClick={onNavigate}>
@@ -127,7 +136,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
                     <span className="text-xl font-bold tracking-tight">Laser Creation</span>
                   </div>
                   <ScrollArea className="flex-1 py-6">
-                    <SidebarNav onNavigate={() => setIsMobileMenuOpen(false)} />
+                    <SidebarNav onNavigate={() => setIsMobileMenuOpen(false)} nivel={user.nivel} />
                   </ScrollArea>
                 </div>
               </SheetContent>
@@ -178,7 +187,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
         {/* Desktop Sidebar */}
         <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
           <ScrollArea className="h-full py-6 pr-6 lg:py-8">
-            <SidebarNav />
+            <SidebarNav nivel={user.nivel} />
           </ScrollArea>
         </aside>
 

@@ -1,7 +1,10 @@
+import { auth } from "@/../auth"
 import { prisma } from "@/lib/prisma"
 import { ProductoForm } from "./producto-form"
 
 export default async function ProductosPage() {
+  const session = await auth()
+  const isAdmin = session?.user?.nivel === 2
   const productos = await prisma.producto.findMany({
     where: { activo: true },
     include: { material: true },
@@ -27,7 +30,7 @@ export default async function ProductosPage() {
         <p className="text-muted-foreground">Define los productos y calcula automáticamente su costo de fabricación.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+      <div className={isAdmin ? "grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8" : "grid grid-cols-1 gap-8"}>
         <div>
           <h2 className="text-xl font-semibold mb-4">Listado</h2>
           <div className="border rounded-lg bg-card overflow-hidden">
@@ -68,9 +71,11 @@ export default async function ProductosPage() {
           </div>
         </div>
 
-        <div>
-          <ProductoForm materiales={materialesPlain} />
-        </div>
+        {isAdmin && (
+          <div>
+            <ProductoForm materiales={materialesPlain} />
+          </div>
+        )}
       </div>
     </div>
   )

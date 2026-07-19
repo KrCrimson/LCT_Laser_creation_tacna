@@ -13,8 +13,17 @@ export const authConfig = {
       const isOnDashboard = !nextUrl.pathname.startsWith("/login");
       
       if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirige a /login
+        if (!isLoggedIn) return false; // Redirige a /login
+        
+        // Rutas protegidas solo para administradores (nivel 2)
+        const adminOnlyRoutes = ['/materiales', '/complementos', '/gastos', '/usuarios'];
+        const isTryingToAccessAdminRoute = adminOnlyRoutes.some(route => nextUrl.pathname.startsWith(route));
+        
+        if (isTryingToAccessAdminRoute && auth.user?.nivel !== 2) {
+          return Response.redirect(new URL("/", nextUrl)); // Redirige al inicio si no es admin
+        }
+        
+        return true;
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/", nextUrl)); // Si ya está logueado y va a /login, envíalo al dashboard
       }
