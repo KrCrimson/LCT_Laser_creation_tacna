@@ -4,6 +4,7 @@ import { useState } from "react"
 import { createProducto } from "./producto-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { parseSvgDimensions } from "@/lib/utils"
 
 export function ProductoForm({ materiales }: { materiales: any[] }) {
   const [largo, setLargo] = useState(0)
@@ -25,37 +26,13 @@ export function ProductoForm({ materiales }: { materiales: any[] }) {
         const base64Data = result.split(',')[1];
         const svgText = atob(base64Data);
         
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(svgText, "image/svg+xml");
-        const svgElement = doc.documentElement;
-        
-        const wStr = svgElement.getAttribute("width");
-        const hStr = svgElement.getAttribute("height");
-        
-        const extractMm = (str: string) => {
-          const val = parseFloat(str);
-          if (str.includes("cm")) return val * 10;
-          if (str.includes("in")) return val * 25.4;
-          if (str.includes("pt")) return val * 0.352778;
-          if (str.includes("px")) return val * 0.264583;
-          return val; 
-        };
-
-        if (wStr && hStr) {
-          setAncho(Math.round(extractMm(wStr)));
-          setLargo(Math.round(extractMm(hStr)));
-        } else {
-          const viewBox = svgElement.getAttribute("viewBox");
-          if (viewBox) {
-            const parts = viewBox.split(" ");
-            if (parts.length >= 4) {
-              setAncho(Math.round(parseFloat(parts[2])));
-              setLargo(Math.round(parseFloat(parts[3])));
-            }
-          }
+        const dims = parseSvgDimensions(svgText);
+        if (dims.ancho !== null && dims.largo !== null) {
+          setAncho(dims.ancho);
+          setLargo(dims.largo);
         }
       } catch (err) {
-        console.error("Error parsing SVG", err);
+        console.error("Error al procesar SVG", err);
       }
     };
     reader.readAsDataURL(file);

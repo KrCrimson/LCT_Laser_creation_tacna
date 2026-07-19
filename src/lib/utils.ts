@@ -82,3 +82,47 @@ export function calcularPrecioTotalMaterial(precio: number, precioCorte: number,
 export function calcularCostoPlancha90x60(precioTotal: number, cantidad90x60: number): number {
   return Math.round((precioTotal / Math.max(1, cantidad90x60)) * 100) / 100;
 }
+
+/**
+ * Extrae el ancho y largo (en mm) de un texto SVG.
+ */
+export function parseSvgDimensions(svgText: string): { ancho: number | null; largo: number | null } {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgText, "image/svg+xml");
+    const svgElement = doc.documentElement;
+    
+    const wStr = svgElement.getAttribute("width");
+    const hStr = svgElement.getAttribute("height");
+    
+    const extractMm = (str: string) => {
+      const val = parseFloat(str);
+      if (str.includes("cm")) return val * 10;
+      if (str.includes("in")) return val * 25.4;
+      if (str.includes("pt")) return val * 0.352778;
+      if (str.includes("px")) return val * 0.264583;
+      return val; 
+    };
+
+    if (wStr && hStr) {
+      return { 
+        ancho: Math.round(extractMm(wStr)), 
+        largo: Math.round(extractMm(hStr)) 
+      };
+    } else {
+      const viewBox = svgElement.getAttribute("viewBox");
+      if (viewBox) {
+        const parts = viewBox.split(" ");
+        if (parts.length >= 4) {
+          return { 
+            ancho: Math.round(parseFloat(parts[2])), 
+            largo: Math.round(parseFloat(parts[3])) 
+          };
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error parsing SVG", err);
+  }
+  return { ancho: null, largo: null };
+}
