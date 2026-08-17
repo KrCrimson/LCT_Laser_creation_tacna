@@ -118,13 +118,7 @@ export async function updateMaterial(id: string, prevState: any, formData: FormD
 
 export async function deleteMaterial(id: string) {
   try {
-    const productos = await prisma.producto.count({
-      where: { materialId: id }
-    });
-
-    if (productos > 0) {
-      return { error: "No se puede eliminar porque hay productos usando este material" };
-    }
+    // La eliminación en cascada está habilitada a nivel de base de datos
 
     await prisma.material.delete({
       where: { id },

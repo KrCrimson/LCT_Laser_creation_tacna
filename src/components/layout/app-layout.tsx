@@ -13,7 +13,8 @@ import {
   FileText,
   LogOut,
   Menu,
-  HelpCircle
+  HelpCircle,
+  Shield
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TutorialTour } from "@/components/tutorial-tour";
 
 const navItems = [
   {
@@ -63,6 +65,11 @@ const navItems = [
     title: "Proformas",
     href: "/proformas",
     icon: FileText,
+  },
+  {
+    title: "Usuarios",
+    href: "/usuarios",
+    icon: Shield,
   },
   {
     title: "Ayuda",
@@ -133,8 +140,8 @@ export function AppLayout({ children, user }: AppLayoutProps) {
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger render={<Button variant="ghost" className="px-2 md:hidden" />}>
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle Menu</span>
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle Menu</span>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                 <div className="flex h-full flex-col">
@@ -160,10 +167,10 @@ export function AppLayout({ children, user }: AppLayoutProps) {
             {/* User Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="ghost" className="relative h-8 w-8 rounded-full" />}>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="" alt={user.name || "User"} />
-                    <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="" alt={user.name || "User"} />
+                  <AvatarFallback>{user.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
                 <div className="flex flex-col space-y-1 p-2">
@@ -202,6 +209,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
           {children}
         </main>
       </div>
+      <TutorialTour />
     </div>
   );
 }

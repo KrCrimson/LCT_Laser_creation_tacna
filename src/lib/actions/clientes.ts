@@ -63,14 +63,7 @@ export async function updateCliente(id: string, prevState: any, formData: FormDa
 
 export async function deleteCliente(id: string) {
   try {
-    // Verificar si el cliente tiene proformas asociadas
-    const proformas = await prisma.proforma.count({
-      where: { clienteId: id }
-    });
-
-    if (proformas > 0) {
-      return { error: "No se puede eliminar porque tiene proformas asociadas" };
-    }
+    // La eliminación en cascada está habilitada a nivel de base de datos
 
     await prisma.cliente.delete({
       where: { id },
