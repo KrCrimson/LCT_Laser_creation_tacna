@@ -43,9 +43,15 @@ export function UsuarioDialog({ trigger, isSuperAdmin }: UsuarioDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Nombre de Usuario *</Label>
-            <Input id="username" name="username" placeholder="ej. jgomez" required />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Nombre de Usuario *</Label>
+              <Input id="username" name="username" placeholder="ej. jgomez" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dni">DNI / Documento</Label>
+              <Input id="dni" name="dni" placeholder="ej. 70123456" maxLength={8} />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="nombre">Nombres *</Label>

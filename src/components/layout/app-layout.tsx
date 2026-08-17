@@ -14,7 +14,8 @@ import {
   LogOut,
   Menu,
   HelpCircle,
-  Shield
+  Shield,
+  User
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -182,10 +183,17 @@ export function AppLayout({ children, user }: AppLayoutProps) {
                     {user.nivel === 2 ? "Administrador" : "Usuario"}
                   </p>
                 </div>
-                <div className="p-2 border-t mt-2">
+                <div className="p-1 border-t mt-2 space-y-1">
+                  <Link 
+                    href="/perfil" 
+                    className="flex items-center w-full px-2 py-1.5 text-xs font-medium rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    <User className="mr-2 h-3.5 w-3.5" />
+                    Mi Perfil
+                  </Link>
                   <form action={logout}>
-                    <Button variant="destructive" size="sm" className="w-full justify-start">
-                      <LogOut className="mr-2 h-4 w-4" />
+                    <Button variant="destructive" size="sm" className="w-full justify-start text-xs h-8">
+                      <LogOut className="mr-2 h-3.5 w-3.5" />
                       Cerrar Sesión
                     </Button>
                   </form>

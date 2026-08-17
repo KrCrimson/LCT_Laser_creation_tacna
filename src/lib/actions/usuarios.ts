@@ -8,6 +8,7 @@ import { auth } from "../../../auth";
 
 const UsuarioSchema = z.object({
   username: z.string().min(3, "El usuario debe tener al menos 3 caracteres"),
+  dni: z.string().optional(),
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   apellidoPat: z.string().min(2, "El apellido paterno es requerido"),
   apellidoMat: z.string().min(2, "El apellido materno es requerido"),
@@ -34,6 +35,7 @@ export async function createUsuario(prevState: any, formData: FormData) {
 
     const data = {
       username: formData.get("username") as string,
+      dni: (formData.get("dni") as string) || undefined,
       nombre: formData.get("nombre") as string,
       apellidoPat: formData.get("apellidoPat") as string,
       apellidoMat: formData.get("apellidoMat") as string,
@@ -59,6 +61,7 @@ export async function createUsuario(prevState: any, formData: FormData) {
     await prisma.usuario.create({
       data: {
         username: validated.data.username,
+        dni: validated.data.dni,
         nombre: validated.data.nombre,
         apellidoPat: validated.data.apellidoPat,
         apellidoMat: validated.data.apellidoMat,
