@@ -36,8 +36,8 @@ export default async function UsuariosPage() {
           <h2 className="text-3xl font-bold tracking-tight">Usuarios del Sistema</h2>
           <p className="text-muted-foreground text-sm">
             {isSuperAdmin 
-              ? "Tienes acceso de Super Administrador. Puedes crear y eliminar Administradores y Usuarios."
-              : "Tienes acceso de Administrador. Puedes crear y gestionar únicamente Usuarios comunes."}
+              ? "Acceso Super Administrador: Control total del sistema, gestión y creación de Administradores y Usuarios."
+              : "Acceso Administrador: Control total del taller (materiales, costos, cotizaciones y gestión de usuarios comunes)."}
           </p>
         </div>
         <div className="flex items-center space-x-2">

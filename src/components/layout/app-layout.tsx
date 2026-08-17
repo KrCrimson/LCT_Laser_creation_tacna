@@ -192,7 +192,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
                     Mi Perfil
                   </Link>
                   <form action={logout}>
-                    <Button variant="destructive" size="sm" className="w-full justify-start text-xs h-8">
+                    <Button type="submit" variant="destructive" size="sm" className="w-full justify-start text-xs h-8 cursor-pointer">
                       <LogOut className="mr-2 h-3.5 w-3.5" />
                       Cerrar Sesión
                     </Button>
